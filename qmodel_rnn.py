@@ -27,4 +27,4 @@ for ticker in unique_tickers:
 print('Starting columns: ' + str(len(raw_df.columns)))
 print('Ending columns: ' + str(len([TICKER_COL] + NPARRAY_COLUMNS)))
 print('Start tickers: ' + str(len(unique_tickers)))
-print('End tickers: ' + str(len(data_dict))
+print('End tickers: ' + str(len(data_dict)))
