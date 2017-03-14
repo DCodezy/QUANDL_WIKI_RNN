@@ -19,11 +19,13 @@ raw_df = raw_df[[TICKER_COL, DATE_COL] + NPARRAY_COLUMNS]
 unique_tickers = raw_df[TICKER_COL].unique()
 # Transfer from pandas to dict of tickers to numpy arrays (dtype=float32)
 data_dict = {}
-for ticker in unique_tickers:
-    temp_data = raw_df[raw_df.ticker == ticker].drop(DATE_COL, 1).as_matrix()
+for (i, ticker) in enumerate(unique_tickers):
+    temp_data = raw_df[raw_df.ticker == ticker].drop([TICKER_COL, DATE_COL], 1).as_matrix()
     if temp_data.shape[0] > MIN_DAYS_ACTIVE:
         temp_data = temp_data[CUT_FIRST_DAYS:]
         data_dict[ticker] = temp_data.astype(np.float32)
+    if i % 100 == 0:
+	print(i)
 
 print('Starting columns: ' + str(len(raw_df.columns)))
 print('Ending columns: ' + str(len([TICKER_COL, DATE_COL] + NPARRAY_COLUMNS)))
