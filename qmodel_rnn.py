@@ -37,7 +37,7 @@ TICKERS_DATA_FILENAME = 'tickerData_pct.npy'
 def make_percentages(data_mtx):
     return (data_mtx[1:] - data_mtx[:-1]) / data_mtx[:-1]
 
-def preprocessing_daily(csv_dir):
+def preprocessing_daily():
     raw_df = pd.read_csv(DATA_DIR)
     raw_df = raw_df[[TICKER_COL, DATE_COL] + NPARRAY_COLUMNS]
     unique_tickers = raw_df[TICKER_COL].unique()
@@ -74,9 +74,11 @@ def create_sequence():
     print('Memory used: ' + str(psutil.virtual_memory()[2]) + '%')
 
 
-def train_test_split():
+#def train_test_split():
 
 
 def begin_training():
     model = Sequential()
     model.add(LSTM)
+
+preprocessing_daily()
