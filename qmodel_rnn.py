@@ -25,16 +25,19 @@ DATE_COL = 'date'
 NPARRAY_COLUMNS = ['open', 'close', 'high', 'low', 'volume']
 MIN_DAYS_ACTIVE = 1000
 CUT_FIRST_DAYS = 100
-TICKERS_NAME_FILENAME = 'tickerNames.npy'
-TICKERS_DATA_FILENAME = 'tickerData.npy'
+USE_PERCENTAGES = True
+TICKERS_NAME_FILENAME = 'tickerNames_pct.npy'
+TICKERS_DATA_FILENAME = 'tickerData_pct.npy'
 
 # Training variables
 
 
 # Prediction variables
 
+def make_percentages(data_mtx):
+    return (data_mtx[1:] - data_mtx[:-1]) / data_mtx[:-1]
 
-def preprocessing(csv_dir):
+def preprocessing_daily(csv_dir):
     raw_df = pd.read_csv(DATA_DIR)
     raw_df = raw_df[[TICKER_COL, DATE_COL] + NPARRAY_COLUMNS]
     unique_tickers = raw_df[TICKER_COL].unique()
@@ -42,13 +45,17 @@ def preprocessing(csv_dir):
     ticker_names = []
     data_in = []
     for (i, ticker) in enumerate(unique_tickers):
-        temp_data = raw_df[raw_df.ticker == ticker] \
-            .drop([TICKER_COL, DATE_COL], 1) \
-            .as_matrix()
+        temp_data = raw_df[raw_df.ticker == ticker]
         if temp_data.shape[0] > MIN_DAYS_ACTIVE:
-            temp_data = temp_data[CUT_FIRST_DAYS:]
+            temp_data = temp_data[CUT_FIRST_DAYS:] \
+                .drop([TICKER_COL, DATE_COL], 1) \
+                .as_matrix()
+            temp_data = temp_data.astype(np.float32)
+            if USE_PERCENTAGES:
+                temp_data = make_percentages(temp_data)
+
             ticker_names.append(ticker)
-            data_in.append(temp_data.astype(np.float32))
+            data_in.append(temp_data)
         if (i % 100) == 0:
             print(i)
             print("Memory used: " + str(psutil.virtual_memory()[2]) + '%')
@@ -56,6 +63,16 @@ def preprocessing(csv_dir):
     np.save(TICKERS_DATA_FILENAME, np.array(data_in))
     print('Start tickers: ' + str(len(unique_tickers)))
     print('End tickers: ' + str(len(data_dict)))
+
+def create_sequence():
+    print('Creating sequences...')
+    seq_in = []
+    exp_out = []
+    for i in range(0, len(int_data) - WINDOW_SIZE):
+        seq_in.append(int_data[i:(i + WINDOW_SIZE)])
+        exp_out.append(int_data[i + WINDOW_SIZE])
+    print('Memory used: ' + str(psutil.virtual_memory()[2]) + '%')
+
 
 def train_test_split():
 
