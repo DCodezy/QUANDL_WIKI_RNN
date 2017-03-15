@@ -7,35 +7,53 @@ import numpy as np
 import pandas as pd
 import psutil
 
+DO_PREPROCESSING = False
+DO_TRAINING = True
+DO_PREDICTION = False
+
+# Preprocessing variables
 DATA_DIR = '~/Downloads/WIKI_PRICES_212.csv'
 TICKER_COL = 'ticker'
 DATE_COL = 'date'
 NPARRAY_COLUMNS = ['open', 'close', 'high', 'low', 'volume']
 MIN_DAYS_ACTIVE = 1000
 CUT_FIRST_DAYS = 100
+TICKERS_NAME_FILENAME = 'tickerNames.npy'
+TICKERS_DATA_FILENAME = 'tickerData.npy'
 
-# Preprocessing-----------------------------------------------------------------
-raw_df = pd.read_csv(DATA_DIR)
-raw_df = raw_df[[TICKER_COL, DATE_COL] + NPARRAY_COLUMNS]
-unique_tickers = raw_df[TICKER_COL].unique()
-# Transfer from pandas to dict of tickers to numpy arrays (dtype=float32)
-data_in = []
-for (i, ticker) in enumerate(unique_tickers):
-    temp_data = raw_df[raw_df.ticker == ticker] \
-                    .drop([TICKER_COL, DATE_COL], 1) \
-                    .as_matrix()
-    if temp_data.shape[0] > MIN_DAYS_ACTIVE:
-        temp_data = temp_data[CUT_FIRST_DAYS:]
-        data_in.append(temp_data.astype(np.float32))
-    if i % 100 == 0:
-	print(i)
-        print("Memory used: " + str(psutil.virtual_memory()[2]) + '%')
+# Training variables
 
-raw_df = []
-np.save('tickerNames.npy', np.array(unique_tickers))
-np.save('tickerData.npy', np.array(data_in))
 
-print('Starting columns: ' + str(len(raw_df.columns)))
-print('Ending columns: ' + str(len([TICKER_COL, DATE_COL] + NPARRAY_COLUMNS)))
-print('Start tickers: ' + str(len(unique_tickers)))
-print('End tickers: ' + str(len(data_dict)))
+# Prediction variables
+
+
+def preprocessing(csv_dir):
+    raw_df = pd.read_csv(DATA_DIR)
+    raw_df = raw_df[[TICKER_COL, DATE_COL] + NPARRAY_COLUMNS]
+    unique_tickers = raw_df[TICKER_COL].unique()
+    # Transfer from pandas to dict of tickers to numpy arrays (dtype=float32)
+    data_in = []
+    for (i, ticker) in enumerate(unique_tickers):
+        temp_data = raw_df[raw_df.ticker == ticker] \
+            .drop([TICKER_COL, DATE_COL], 1) \
+            .as_matrix()
+        if temp_data.shape[0] > MIN_DAYS_ACTIVE:
+            temp_data = temp_data[CUT_FIRST_DAYS:]
+            data_in.append(temp_data.astype(np.float32))
+        if (i % 100) == 0:
+            print(i)
+            print("Memory used: " + str(psutil.virtual_memory()[2]) + '%')
+
+    raw_df = []
+    np.save(TICKERS_NAME_FILENAME, np.array(unique_tickers))
+    np.save(TICKERS_DATA_FILENAME, np.array(data_in))
+
+    print('Starting columns: ' + str(len(raw_df.columns)))
+    print(
+        'Ending columns: '
+        + str(len([TICKER_COL, DATE_COL] + NPARRAY_COLUMNS))
+    )
+    print('Start tickers: ' + str(len(unique_tickers)))
+    print('End tickers: ' + str(len(data_dict)))
+
+def training()
