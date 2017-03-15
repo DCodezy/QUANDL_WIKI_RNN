@@ -28,8 +28,8 @@ for (i, ticker) in enumerate(unique_tickers):
         temp_data = temp_data[CUT_FIRST_DAYS:]
         data_in.append(temp_data.astype(np.float32))
     if i % 100 == 0:
-	       print(i)
-           print("Memory used: " + str(psutil.virtual_memory()[2]) + '%')
+	print(i)
+        print("Memory used: " + str(psutil.virtual_memory()[2]) + '%')
 
 raw_df = []
 np.save('tickerNames.npy', np.array(unique_tickers))
