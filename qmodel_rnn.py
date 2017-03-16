@@ -40,8 +40,8 @@ def preprocessing_daily():
     raw_df = raw_df[[TICKER_COL, DATE_COL] + NPARRAY_COLUMNS]
     unique_tickers = raw_df[TICKER_COL].unique()
     # Find how many NaNs in each column
-    for ticker in unique_tickers:
-        print(ticker + ': ' + str(raw_df[ticker].isnull().sum()))
+    for col in raw_df.columns:
+        print(col + ': ' + str(raw_df[col].isnull().sum()))
 
     # Transfer from pandas to dict of tickers to numpy arrays (dtype=float32)
     ticker_names = []
