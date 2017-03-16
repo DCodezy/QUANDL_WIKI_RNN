@@ -73,7 +73,6 @@ def analyze_data():
 def begin_training():
     def generate_sequences():
         print('Creating sequences...')
-        raw_tickers =
         raw_data = np.load(TICKERS_DATA_FILENAME)
         seq_in = []
         exp_out = []
