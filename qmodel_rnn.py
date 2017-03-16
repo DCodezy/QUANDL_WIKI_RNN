@@ -15,7 +15,8 @@ from keras.utils.data_utils import get_file
 from keras.callbacks import ModelCheckpoint
 
 DO_PREPROCESSING = False
-DO_TRAINING = True
+DO_ANALYZE = True # Requires Preprocessing to be done
+DO_TRAINING = False
 DO_PREDICTION = False
 
 # Preprocessing variables
@@ -29,18 +30,19 @@ USE_PERCENTAGES = True
 TICKERS_NAME_FILENAME = 'tickerNames_pct.npy'
 TICKERS_DATA_FILENAME = 'tickerData_pct.npy'
 
-# Training variables
-
-
-# Prediction variables
-
-def make_percentages(data_mtx):
-    return (data_mtx[1:] - data_mtx[:-1]) / data_mtx[:-1]
+# Training and Prediction variables
+WINDOW_SIZE = 30
 
 def preprocessing_daily():
+    print('Starting preprocessing')
     raw_df = pd.read_csv(DATA_DIR)
+    print('CSV data successfully loaded')
     raw_df = raw_df[[TICKER_COL, DATE_COL] + NPARRAY_COLUMNS]
     unique_tickers = raw_df[TICKER_COL].unique()
+    # Find how many NaNs in each column
+    for ticker in unique_tickers:
+        print(ticker + ': ' + str(raw_df[ticker].isnull().sum()))
+
     # Transfer from pandas to dict of tickers to numpy arrays (dtype=float32)
     ticker_names = []
     data_in = []
@@ -62,23 +64,29 @@ def preprocessing_daily():
     np.save(TICKERS_NAME_FILENAME, np.array(ticker_names))
     np.save(TICKERS_DATA_FILENAME, np.array(data_in))
     print('Start tickers: ' + str(len(unique_tickers)))
-    print('End tickers: ' + str(len(data_dict)))
+    print('End tickers: ' + str(len(ticker_names)))
 
-def create_sequence():
-    print('Creating sequences...')
-    seq_in = []
-    exp_out = []
-    for i in range(0, len(int_data) - WINDOW_SIZE):
-        seq_in.append(int_data[i:(i + WINDOW_SIZE)])
-        exp_out.append(int_data[i + WINDOW_SIZE])
-    print('Memory used: ' + str(psutil.virtual_memory()[2]) + '%')
-
-
-#def train_test_split():
-
+def analyze_data():
+    data_in = np.load(TICKERS_DATA_FILENAME)
+    print(data_in[0])
 
 def begin_training():
+    def generate_sequences():
+        print('Creating sequences...')
+        raw_tickers =
+        raw_data = np.load(TICKERS_DATA_FILENAME)
+        seq_in = []
+        exp_out = []
+        for i in range(0, len(int_data) - WINDOW_SIZE):
+            seq_in.append(int_data[i:(i + WINDOW_SIZE)])
+            exp_out.append(int_data[i + WINDOW_SIZE])
+        print('Memory used: ' + str(psutil.virtual_memory()[2]) + '%')
     model = Sequential()
     model.add(LSTM)
 
-preprocessing_daily()
+if DO_PREPROCESSING:
+    preprocessing_daily()
+if DO_ANALYZE:
+    analyze_data()
+if DO_TRAINING:
+    begin_training()
