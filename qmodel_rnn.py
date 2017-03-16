@@ -14,8 +14,8 @@ from keras.optimizers import RMSprop
 from keras.utils.data_utils import get_file
 from keras.callbacks import ModelCheckpoint
 
-DO_PREPROCESSING = False
-DO_ANALYZE = True # Requires Preprocessing to be done
+DO_PREPROCESSING = True
+DO_ANALYZE = False # Requires Preprocessing to be done
 DO_TRAINING = False
 DO_PREDICTION = False
 
